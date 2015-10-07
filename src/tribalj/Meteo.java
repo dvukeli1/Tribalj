@@ -176,6 +176,7 @@ public class Meteo {
                 for (int i = 0; i< sampleNumber;i++){
                     EW_VectorArr [i]= Math.sin(tempw[i]* (Math.PI / 180)) * temps[i];
                     NS_VectorArr [i]= Math.cos(tempw [i]* (Math.PI / 180)) * temps[i];
+                    averageSpeed+=temps[i];
                      EW_Vector += EW_VectorArr[i];
                     NS_Vector += NS_VectorArr[i];
                     
@@ -211,9 +212,9 @@ public class Meteo {
                 angle = (180 / Math.PI) * Math.atan(NS_Avg / EW_Avg) + ang;
                 
                  if (EW_Vector != 0 || NS_Vector != 0){
-                averageSpeed= Math.sqrt(Math.pow(EW_Avg, 2) + Math.pow(NS_Avg, 2));
-              
-                windGust = averageSpeed*(1+(3/(Math.log(750/0.03))));
+                double averageSpeedGust= Math.sqrt(Math.pow(EW_Avg, 2) + Math.pow(NS_Avg, 2));
+              averageSpeed/=(count+1);
+                windGust = averageSpeedGust*(1+(3/(Math.log(750/0.03))));
                /*if(maxSpeed/windGust > 1.7){
                     maxSpeed = windGust;
                 }*/
