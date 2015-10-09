@@ -61,6 +61,7 @@ public class Meteo {
     private static boolean isError = false;
     private static boolean errorSend = false;
     private static int readingsNumber = 0;
+    private static int wrongCondNumber = 0;
     private static String tweetMessage = "";
     private static boolean isTweet = false;
 
@@ -296,22 +297,28 @@ public class Meteo {
                            readingsNumber++;
                             System.out.println("Broj ocitanja  = " + readingsNumber);
                         } else {
-                            isTweet = true;
-                            readingsNumber = 0;
+                            wrongCondNumber++;
+                            
                         }
                     } else {
-                        isTweet = true;
-                        readingsNumber = 0;
+                        wrongCondNumber++;
+                        
                     }
                 } else {
+                    wrongCondNumber++;
+                    
+                }
+                System.out.println("Wrong weather number = " + wrongCondNumber);
+                if(wrongCondNumber == 5){
+                    wrongCondNumber = 0;
                     isTweet = true;
                     readingsNumber = 0;
                 }
-
                  if (isTweet && readingsNumber == 10) {
                                 System.out.println("Poslao OK");
                                 isTweet = false;
                                 readingsNumber = 0;
+                                wrongCondNumber = 0;
                                 Tweet();
                             }
             }
