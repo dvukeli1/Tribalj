@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://flumen.club:3306/jan_met?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">jan_jan</property>
+    <property name="hibernate.connection.password">Flumen96</property>
+    <mapping resource="tribalj/Data.hbm.xml"/>
+    <mapping resource="tribalj/System.hbm.xml"/>
+    <mapping resource="tribalj/Stations.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
