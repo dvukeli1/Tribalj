@@ -5,6 +5,9 @@
  */
 package tribalj;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
 
@@ -17,15 +20,21 @@ import org.hibernate.SessionFactory;
 public class NewHibernateUtil {
 
     private static final SessionFactory sessionFactory;
-    
+    private static Logger  logger;
+    private static ConsoleHandler consoleHandler;
+       
     static {
+        logger = Logger.getLogger(Meteo.class.getName());
+        consoleHandler = new ConsoleHandler();
+         logger.addHandler(consoleHandler);
         try {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
             // config file.
             sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
         } catch (Throwable ex) {
             // Log the exception. 
-            System.err.println("Initial SessionFactory creation failed." + ex);
+            logger.log(Level.WARNING, "Initial SessionFactory creation failed.{0}", ex);
+     //       System.err.println("Initial SessionFactory creation failed." + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }

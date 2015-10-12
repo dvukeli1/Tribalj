@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import twitter4j.Status;
@@ -64,11 +65,15 @@ public class Meteo {
     private static int wrongCondNumber = 0;
     private static String tweetMessage = "";
     private static boolean isTweet = false;
+    private static Logger logger;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        logger = Logger.getLogger(Meteo.class.getName());
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        logger.addHandler(consoleHandler);
 
         localDateTime = LocalDateTime.now();
         // TODO code application logic here
@@ -96,7 +101,8 @@ public class Meteo {
 
             if (read) {
                 data = event.getData();
-                System.out.println("count = " + count);
+                logger.log(Level.INFO, "count = {0}", count);
+              //  System.out.println("count = " + count);
 
                 try {
 
@@ -123,7 +129,7 @@ public class Meteo {
                         tempw[i] = angleWind[i];
 
                     }
-                    System.out.println("Reset !!");
+//                    System.out.println("Reset !!");
                 }
                 data = "";
             }
@@ -168,7 +174,7 @@ public class Meteo {
                     } catch (Exception e) {
                         command = "echo \"Restarting Meteo:  USB PROBLEM !!   $(date)\" | mail -s \"Meteo stanica\" \"petimilan@gmail.com\"";
                         TerminalCommand(command);
-                        System.exit(0);
+//                        System.exit(0);
                     }
                 }
 
@@ -207,7 +213,7 @@ public class Meteo {
                     }
 
                 }
-                System.out.println(" EW_aver = " + EW_Vector + " NS_aver = " + NS_Vector);
+   //             System.out.println(" EW_aver = " + EW_Vector + " NS_aver = " + NS_Vector);
                 Double EW_Avg = (EW_Vector / count + 1) * (-1);
                 Double NS_Avg = (NS_Vector / count + 1) * (-1);
                 int ang = 0;
@@ -252,7 +258,7 @@ public class Meteo {
 
                     isError = true;
                     isOk = false;
-                    System.out.println("GRESKA!!");
+   //                 System.out.println("GRESKA!!");
 
                 }
 
@@ -266,15 +272,16 @@ public class Meteo {
                         localDateTime = LocalDateTime.now();
                         time = "" + localDateTime.getYear() + "-" + localDateTime.getMonthValue() + "-" + localDateTime.getDayOfMonth()
                                 + "/" + localDateTime.getHour() + ":" + localDateTime.getMinute() + ":" + localDateTime.getSecond();
-                        String time2 = ""  + localDateTime.getDayOfMonth() + "-" + localDateTime.getMonthValue() + "-" + localDateTime.getYear() 
+                        String time2 = "" + localDateTime.getDayOfMonth() + "-" + localDateTime.getMonthValue() + "-" + localDateTime.getYear()
                                 + " " + localDateTime.getHour() + ":" + localDateTime.getMinute();
                         command = "/home/pi/sendData.sh " + time + " " + stationID + " " + df2.format(averageSpeed) + " " + direction + " "
                                 + df2.format(angle) + " " + df2.format(windGust) + " " + df2.format(maxSpeed) + " 0 0";
                         tweetMessage = time2 + "\nWind direction - " + direction + "\nAverage wind speed - " + df2.format(averageSpeed)
                                 + " m/s \n" + "Max wind speed = " + df2.format(maxSpeed) + " m/s \n" + "Wind gust = " + df2.format(windGust) + " m/s";
-                        System.out.println(tweetMessage);
+                        //                 System.out.println(tweetMessage);
+                        logger.info(tweetMessage);
                         SendData();
-                       // Tweet();
+                        // Tweet();
                     }
                 }
                 if (!isOk && isError) {
@@ -284,43 +291,43 @@ public class Meteo {
                     }
                     errorSend = true;
                 }
-                System.out.println(command);
+                // System.out.println(command);
                 count = 0;
                 read = true;
                 isSend = true;
                 if ((localDateTime.getHour() > 9 && localDateTime.getHour() < 18)) {
-                    System.out.println("Vrijeme OK");
+                    //     System.out.println("Vrijeme OK");
                     if (angle > 90 && angle < 270) {
-                        System.out.println("KUT OK");
+                        //      System.out.println("KUT OK");
                         if (averageSpeed < 10) {
-                            System.out.println("Brzina vjetra OK");
-                           readingsNumber++;
-                            System.out.println("Broj ocitanja  = " + readingsNumber);
+                            //          System.out.println("Brzina vjetra OK");
+                            readingsNumber++;
+                            //          System.out.println("Broj ocitanja  = " + readingsNumber);
                         } else {
                             wrongCondNumber++;
-                            
+
                         }
                     } else {
                         wrongCondNumber++;
-                        
+
                     }
                 } else {
                     wrongCondNumber++;
-                    
+
                 }
-                System.out.println("Wrong weather number = " + wrongCondNumber);
-                if(wrongCondNumber == 5){
+                // System.out.println("Wrong weather number = " + wrongCondNumber);
+                if (wrongCondNumber == 5) {
                     wrongCondNumber = 0;
                     isTweet = true;
                     readingsNumber = 0;
                 }
-                 if (isTweet && readingsNumber == 10) {
-                                System.out.println("Poslao OK");
-                                isTweet = false;
-                                readingsNumber = 0;
-                                wrongCondNumber = 0;
-                                Tweet();
-                            }
+                if (isTweet && readingsNumber == 10) {
+                    //                 System.out.println("Poslao OK");
+                    isTweet = false;
+                    readingsNumber = 0;
+                    wrongCondNumber = 0;
+                    Tweet();
+                }
             }
         }, 100, schedule);
     }
@@ -386,7 +393,7 @@ public class Meteo {
             public void run() {
 
                 String response = "ID = " + TerminalCommand(command) + "\n";
-                System.out.println(response);
+                //     System.out.println(response);
             }
         });
         send.start();
@@ -409,18 +416,17 @@ public class Meteo {
                             .setOAuthAccessTokenSecret("Dy1yd0oTejBmkv88mytPFufO8CvZHv6gnZVxipmsdTY5L");
                     TwitterFactory tf = new TwitterFactory(cb.build());
                     Twitter twitter = tf.getInstance();
-                    StatusUpdate statusUpdate = new StatusUpdate( tweetMessage);
+                    StatusUpdate statusUpdate = new StatusUpdate(tweetMessage);
                     //attach any media, if you want to
                     statusUpdate.setMedia(
                             //title of media
-                            ""
-                            , new URL("http://flumen.club/fotke/front.jpg?raw=1").openStream());
+                            "", new URL("http://flumen.club/fotke/front.jpg?raw=1").openStream());
                     try {
                         Status status = twitter.updateStatus(statusUpdate);
                     } catch (TwitterException ex) {
                         Logger.getLogger(Meteo.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                 } catch (MalformedURLException ex) {
                     Logger.getLogger(Meteo.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
