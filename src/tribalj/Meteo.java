@@ -15,12 +15,18 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -66,7 +72,7 @@ public class Meteo {
     private static String tweetMessage = "";
     private static boolean isTweet = false;
     private static Logger logger;
-
+    static  Session session = null;
     /**
      * @param args the command line arguments
      */
@@ -280,6 +286,42 @@ public class Meteo {
                                 + " m/s \n" + "Max wind speed = " + df2.format(maxSpeed) + " m/s \n" + "Wind gust = " + df2.format(windGust) + " m/s";
                         //                 System.out.println(tweetMessage);
                         logger.info(tweetMessage);
+            /*              SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
+                          Date date = null;
+                        try {
+                            date = formatter.parse(time);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(Meteo.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                         try{
+      SessionFactory sessionFactory = NewHibernateUtil.getSessionFactory();
+        session =sessionFactory.openSession();
+        session.beginTransaction();
+       Stations station = new Stations();
+       station.setStId((long)stationID);
+       logger.info("Populating the database !");
+        Data data = new Data();
+        data.setStations(station);
+        data.setSendTime(date);
+        data.setWindSp(Double.valueOf(df2.format(averageSpeed)));
+        data.setWindMax(Double.valueOf(df2.format(maxSpeed)));
+        data.setWindGust(Double.valueOf(df2.format(windGust)));
+        data.setWindAng(Double.valueOf(df2.format(angle)));
+        data.setWindDir(direction);
+        session.save(data);
+        session.getTransaction().commit();
+         
+       logger.info("Done!");
+        }
+     
+    catch(Exception e){
+         Logger.getLogger(Meteo.class.getName()).log(Level.SEVERE, null, e);
+    }
+  
+  finally{
+    session.flush();
+    session.close();
+  }*/
                         SendData();
                         // Tweet();
                     }
