@@ -14,8 +14,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.ConsoleHandler;
@@ -66,11 +71,18 @@ public class Meteo {
     private static String tweetMessage = "";
     private static boolean isTweet = false;
     private static Logger logger;
+    
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+       /* try {
+            factory = NewHibernateUtil.getSessionFactory();
+        } catch (Exception e) {
+        }*/
+        
+       
         logger = Logger.getLogger(Meteo.class.getName());
         ConsoleHandler consoleHandler = new ConsoleHandler();
         logger.addHandler(consoleHandler);
@@ -112,8 +124,19 @@ public class Meteo {
                     angleWind[count] = Double.valueOf(split[1]);
 
                     String split1[] = received[0].split(":");
-
-                    speed[count] = Double.valueOf(split1[1]);
+                    double speedTemp = Double.valueOf(split1[1]);
+                    if(count>0){
+                        if(speed[count-1]/speed[count]<1.2){
+                            speed[count] = speed[count-1];
+                        }
+                        else{
+                             speed[count] = speedTemp;
+                        }
+                    }
+                    else{
+                         speed[count] = speedTemp;
+                    }
+                   
 
                     count++;
 
@@ -279,7 +302,37 @@ public class Meteo {
                         tweetMessage = time2 + "\nWind direction - " + direction + "\nAverage wind speed - " + df2.format(averageSpeed)
                                 + " m/s \n" + "Max wind speed = " + df2.format(maxSpeed) + " m/s \n" + "Wind gust = " + df2.format(windGust) + " m/s";
                         //                 System.out.println(tweetMessage);
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd/HH:mm:ss");
+                        Date date = Calendar.getInstance().getTime();
+                        try {
+                            date =  formatter.parse(time);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(Meteo.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         logger.info(tweetMessage);
+                        
+                 /*         Transaction tx = null;
+                        try{
+                        session = factory.openSession();
+                       
+                        tx = session.beginTransaction();
+                         dbData = new Data();
+                        dbData.setWindSp(Double.valueOf(df2.format(averageSpeed)));
+                        dbData.setWindMax(Double.valueOf(df2.format(maxSpeed)));
+                        dbData.setWindGust(Double.valueOf(df2.format(windGust)));
+                        dbData.setWindAng(Double.valueOf(df2.format(angle)));
+                        dbData.setWindDir(direction);
+                        dbData.setId(stationID);
+                        dbData.setSendTime(date);
+                        session.persist(dbData);
+                        tx.commit();
+                         }catch (HibernateException e) {
+         if (tx!=null) tx.rollback();
+         logger.info(e.getMessage());
+      }finally {
+          // close the session
+         session.close();
+      }*/
                         SendData();
                         // Tweet();
                     }
