@@ -48,8 +48,9 @@ public class Meteo {
     private static int count = 0;
     private static final int stationID = 1;
     private static String data;
-    private static Double averageSpeed = 0.0;
-    private static Double maxSpeed = 0.0;
+    private static double averageSpeed = 0.0;
+    private static double maxSpeed = 0.0;
+    private static double newAngle = 0.0;
     private static final int sampleNumber = 100;
     private static boolean isSend = false;
     private static final int schedule = 60000;
@@ -205,9 +206,10 @@ public class Meteo {
                 boolean isOk = false;
                 double EW_Vector = 0.0;
                 double NS_Vector = 0.0;
-                Double newMax = 0.0;
+                double newMax = 0.0;
                 maxSpeed = 0.01;
                 averageSpeed = 0.01;
+                newAngle = 0.01;
                 double windGust = 0.01;
                 double angle = 359.9;
                 for (int i = 0; i < sampleNumber; i++) {
@@ -216,7 +218,7 @@ public class Meteo {
                     averageSpeed += temps[i];
                     EW_Vector += EW_VectorArr[i];
                     NS_Vector += NS_VectorArr[i];
-
+                    newAngle += tempw[i];
                     if (i > 4) {
                         double ew = ((EW_VectorArr[i] + EW_VectorArr[i - 1] + EW_VectorArr[i - 2] + EW_VectorArr[i - 3] + EW_VectorArr[i - 4] + EW_VectorArr[i - 5]));
                         double ns = ((NS_VectorArr[i] + NS_VectorArr[i - 1] + NS_VectorArr[i - 2] + NS_VectorArr[i - 3] + NS_VectorArr[i - 4] + NS_VectorArr[i - 5]));
@@ -250,8 +252,8 @@ public class Meteo {
                     ang = 360;
                 }
 
-                angle = (180 / Math.PI) * Math.atan(NS_Avg / EW_Avg) + ang;
-
+                //angle = (180 / Math.PI) * Math.atan(NS_Avg / EW_Avg) + ang;
+                angle = newAngle/count;
                 if (EW_Vector != 0 || NS_Vector != 0) {
                     double averageSpeedGust = Math.sqrt(Math.pow(EW_Avg, 2) + Math.pow(NS_Avg, 2));
                     averageSpeed /= (count + 1);
